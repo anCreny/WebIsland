@@ -1,6 +1,7 @@
 package WebIsland
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -39,6 +40,7 @@ func (this *App) UseControllers() *ControllerHandler {
 }
 
 func (this *App) Run() {
+	fmt.Println("[\\033[32msuccess\\033[0m]: Server now listening on " + this.address)
 	log.Fatal(http.ListenAndServe(this.address, this))
 }
 
