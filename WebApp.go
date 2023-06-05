@@ -1,8 +1,6 @@
-package webApp
+package WebIsland
 
 import (
-	"WebIsland/webApp/Controllers"
-	"WebIsland/webApp/ServicesSystem"
 	"log"
 	"net/http"
 	"strings"
@@ -13,9 +11,9 @@ type App struct {
 	executors []string
 
 	middlewares        map[string]*IMiddleware
-	controllersHandler *Controllers.ControllerHandler
+	controllersHandler *ControllerHandler
 
-	Services *ServicesSystem.Handler
+	Services *ServicesHandler
 
 	servicesUpdateChan chan int
 }
@@ -23,7 +21,7 @@ type App struct {
 func PrepareBuilding(ipAddress string, port string) (app *App) {
 	var servicesUpdateChan = make(chan int)
 
-	app = &App{ipAddress + ":" + port, []string{}, map[string]*IMiddleware{}, nil, ServicesSystem.NewHandler(servicesUpdateChan), servicesUpdateChan}
+	app = &App{ipAddress + ":" + port, []string{}, map[string]*IMiddleware{}, nil, NewHandler(servicesUpdateChan), servicesUpdateChan}
 	return
 }
 
@@ -34,8 +32,8 @@ func (this *App) AddMiddleware(middleware IMiddleware) {
 	this.middlewares[identifier] = &middleware
 }
 
-func (this *App) UseControllers() *Controllers.ControllerHandler {
-	this.controllersHandler = Controllers.NewControllerHandler()
+func (this *App) UseControllers() *ControllerHandler {
+	this.controllersHandler = NewControllerHandler()
 	this.executors = append(this.executors, "controllersHandler")
 	return this.controllersHandler
 }
@@ -49,7 +47,7 @@ func (this *App) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	var formattedAccepts = strings.Split(accpets, ",")
 	if formattedAccepts[0] != "image/avif" {
 
-		this.Services.StartRequest()
+		this.Services.startRequest()
 
 	Loop:
 		for _, val := range this.executors {

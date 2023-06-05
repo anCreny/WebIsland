@@ -1,7 +1,6 @@
-package Controllers
+package WebIsland
 
 import (
-	"WebIsland/webApp/ServicesSystem"
 	"net/http"
 	"strings"
 )
@@ -21,7 +20,7 @@ func NewControllerHandler() *ControllerHandler {
 	}
 }
 
-func (this *ControllerHandler) HandleThread(resp http.ResponseWriter, req *http.Request, services *ServicesSystem.Handler) bool {
+func (this *ControllerHandler) HandleThread(resp http.ResponseWriter, req *http.Request, services *ServicesHandler) bool {
 	var path = req.URL.Path
 	pathParts := strings.Split(path, "/")
 

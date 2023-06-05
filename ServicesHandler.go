@@ -1,4 +1,4 @@
-package ServicesSystem
+package WebIsland
 
 import "fmt"
 
@@ -7,15 +7,13 @@ type Service struct {
 	serviceReference *IService
 }
 
-type Handler struct {
+type ServicesHandler struct {
 	transient map[string]IService
 	scoped    map[string]*Service
 	singleton map[string]*Service
-
-	servicesUpdated chan int
 }
 
-func (this *Handler) StartRequest() {
+func (this *ServicesHandler) startRequest() {
 	for _, value := range this.scoped {
 		var reference = value.serviceSample.New()
 		value.serviceReference = &reference
@@ -30,25 +28,15 @@ func (this *Handler) StartRequest() {
 	}
 }
 
-func NewHandler(servicesUpdateChan chan int) *Handler {
-	return &Handler{
-		transient:       map[string]IService{},
-		scoped:          map[string]*Service{},
-		singleton:       map[string]*Service{},
-		servicesUpdated: servicesUpdateChan,
+func NewHandler(servicesUpdateChan chan int) *ServicesHandler {
+	return &ServicesHandler{
+		transient: map[string]IService{},
+		scoped:    map[string]*Service{},
+		singleton: map[string]*Service{},
 	}
 }
 
-func (this *Handler) StartListening() {
-	for {
-		select {
-		case <-this.servicesUpdated:
-			this.StartRequest()
-		}
-	}
-}
-
-func (this *Handler) GetTransient(name string) IService {
+func (this *ServicesHandler) GetTransient(name string) IService {
 	if service, ok := this.transient[name]; ok {
 		return service
 	}
@@ -56,14 +44,14 @@ func (this *Handler) GetTransient(name string) IService {
 	return nil
 }
 
-func (this *Handler) AddTransient(service IService) {
+func (this *ServicesHandler) AddTransient(service IService) {
 	var name = service.GetName()
 	if _, ok := this.transient[name]; !ok {
 		this.transient[name] = service
 	}
 }
 
-func (this *Handler) GetScoped(name string) *IService {
+func (this *ServicesHandler) GetScoped(name string) *IService {
 	if service, ok := this.scoped[name]; ok {
 		return service.serviceReference
 	}
@@ -71,14 +59,14 @@ func (this *Handler) GetScoped(name string) *IService {
 	return nil
 }
 
-func (this *Handler) AddScoped(service IService) {
+func (this *ServicesHandler) AddScoped(service IService) {
 	var name = service.GetName()
 	if _, ok := this.scoped[name]; !ok {
 		this.scoped[name] = &Service{service, nil}
 	}
 }
 
-func (this *Handler) GetSingleton(name string) *IService {
+func (this *ServicesHandler) GetSingleton(name string) *IService {
 	if service, ok := this.singleton[name]; ok {
 		return service.serviceReference
 	}
@@ -86,7 +74,7 @@ func (this *Handler) GetSingleton(name string) *IService {
 	return nil
 }
 
-func (this *Handler) AddSingleton(service IService) {
+func (this *ServicesHandler) AddSingleton(service IService) {
 	var name = service.GetName()
 	if _, ok := this.singleton[name]; !ok {
 		this.singleton[name] = &Service{service, nil}

@@ -1,4 +1,4 @@
-package ServicesSystem
+package WebIsland
 
 type IService interface {
 	GetName() string
