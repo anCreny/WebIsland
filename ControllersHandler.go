@@ -23,6 +23,7 @@ func NewControllerHandler() *ControllerHandler {
 func (this *ControllerHandler) HandleThread(resp http.ResponseWriter, req *http.Request, services *ServicesHandler) bool {
 	var path = req.URL.Path
 	pathParts := strings.Split(path, "/")
+	pathParts = wipeSpaces(pathParts)
 
 	if len(pathParts) == 0 {
 		if controller, ok := this.controllers[this.defaultControllerRoute]; ok {
@@ -66,4 +67,15 @@ func (this *ControllerHandler) UseDefaultPathPattern() {
 func (this *ControllerHandler) SetOwnPathPattern(defaultController string, defaultAction string) {
 	this.defaultControllerRoute = defaultController
 	this.defaultActionRoute = defaultAction
+}
+
+func wipeSpaces(array []string) []string {
+	var result []string
+	for _, value := range array {
+		if value != " " && value != "" {
+			result = append(result, value)
+		}
+	}
+
+	return result
 }
