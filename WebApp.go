@@ -40,7 +40,7 @@ func (this *App) UseControllers() *ControllerHandler {
 }
 
 func (this *App) Run() {
-	fmt.Println("[\\033[32msuccess\\033[0m]: Server now listening on " + this.address)
+	fmt.Println("[" + Green + "success" + Reset + "]: Server is listening now on " + Yellow + this.address + Reset)
 	log.Fatal(http.ListenAndServe(this.address, this))
 }
 
